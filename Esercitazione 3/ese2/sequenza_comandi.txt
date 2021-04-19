@@ -1,0 +1,4 @@
+gcc -std=c99 -Wall tokenizer.c -c -fPIC -o tokenizer.o
+gcc -shared -o libtokenizer.so tokenizer.o
+gcc tokenizer_main.c -o tokenizer_main -Wl,-rpath="$PWD/myFolder" -L ./myFolder/ -ltokenizer
+./tokenizer_main "asd qwe zxc"
