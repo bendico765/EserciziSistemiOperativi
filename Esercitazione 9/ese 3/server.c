@@ -46,7 +46,6 @@ int main(int argc, char *argv[]){
 	int fd_num = 0; // max fd attivo
 	fd_set set; // insieme fd attivi
 	fd_set rdset; // insieme fd attesi in lettura
-	int requests_counter; // numero richieste accettate
 	char buffer[BUFFERSIZE];
 	
 	// mantengo il massimo indice di descrittore
@@ -56,8 +55,7 @@ int main(int argc, char *argv[]){
 	}
 	FD_ZERO(&set);
 	FD_SET(socket_fd, &set);
-	requests_counter = 0;
-	while(requests_counter < MAX_REQUESTS){
+	while(1){
 		// bisogna inizializzare ogni volta rdset 
 		// perchè set lo modifica
 		rdset = set; // preparo maschera per select
@@ -67,7 +65,6 @@ int main(int argc, char *argv[]){
 			if( FD_ISSET(fd, &rdset) ){
 				if( fd == socket_fd ){ // sock connect pronto
 					fd_connect = accept(socket_fd, NULL, 0);
-					requests_counter++;
 					fprintf(stderr, "Ho accettato una connessione\n");
 					FD_SET(fd_connect, &set);
 					if( fd_connect > fd_num ){
@@ -75,7 +72,8 @@ int main(int argc, char *argv[]){
 					}
 				}
 				else{	// sock I/O pronto
-					int readChars = read(fd, buffer, BUFFERSIZE);
+					int readChars;
+					ce_less1( readChars = read(fd, buffer, BUFFERSIZE), "Errore nella read");
 					if( readChars == 0 ){ // EOF client finito
 						FD_CLR(fd, &set);
 						if( fd == fd_num ){
@@ -87,7 +85,7 @@ int main(int argc, char *argv[]){
 						for(int i = 0; i < readChars; i++){
 							buffer[i] = toupper(buffer[i]);
 						}
-						write(fd_connect, buffer, strlen(buffer));
+						ce_less1( write(fd, buffer, strlen(buffer)), "Errore nella write");
 					}
 				}
 			}
