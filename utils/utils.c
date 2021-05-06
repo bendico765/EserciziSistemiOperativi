@@ -15,7 +15,12 @@ int isNumber(const char* s, long* n) {
 	return 1;   // non e' un numero
 }
 
-/* Read "n" bytes from a descriptor */
+/** Evita letture parziali
+ *
+ *   \retval -1   errore (errno settato)
+ *   \retval  0   se durante la lettura da fd leggo EOF
+ *   \retval size se termina con successo
+ */
 ssize_t readn(int fd, void *ptr, size_t n) {  
    size_t   nleft;
    ssize_t  nread;
@@ -37,7 +42,12 @@ ssize_t readn(int fd, void *ptr, size_t n) {
    return(n - nleft); /* return >= 0 */
 }
  
-/* Write "n" bytes to a descriptor */
+/** Evita scritture parziali
+ *
+ *   \retval -1   errore (errno settato)
+ *   \retval  0   se durante la scrittura la write ritorna 0
+ *   \retval  1   se la scrittura termina con successo
+ */
 ssize_t writen(int fd, void *ptr, size_t n) {  
    size_t   nleft;
    ssize_t  nwritten;
