@@ -1,3 +1,8 @@
+#include <errno.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 int isNumber(const char* s, long* n) {
 	if (s==NULL) 
 		return 1;
